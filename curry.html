@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      {% if curry.title %}
+        {{ curry.title }}
+      {% else %}
+        {{ curry.full_name | lower | replace(" ", "-") }}
+      {% endif %}
+    </title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+      @theme {
+        --font-display: "Poppins", "sans-serif";
+        --font-sans: "Poppins", "sans-serif";
+      }
+    </style>
+  </head>
+  <body class="min-w-screen min-h-screen bg-stone-50 text-stone-600 text-base">
+    <main class="mx-auto grid grid-cols-[4fr_2fr] [&_h1]:text-stone-900 [&_h2]:text-rose-600 [&_h3]:text-stone-900 [&_h1,&_h2]:text-2xl [&_h3]:text-lg [&_h2]:mb-3 [&_h1,&_h2,&_h3]:text-balance [&_p]:text-pretty [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5">
+      <div class="flex flex-col gap-9 pr-6 pb-6 border-r border-r-stone-100">
+        <section id="introduction" class="flex gap-6 items-center">
+          <img src="./avatar.jpg" class="w-24 h-24 rounded-full object-cover"/>
+
+          <div class="flex flex-col gap-0.5">
+            <h1>{{ curry.full_name }}</h1>
+            <p class="text-rose-600 font-medium">{{ curry.job_title }}</p>
+            <span>
+              {{ curry.location }}
+            </span>
+          </div>
+        </section>
+
+        <section id="summary">
+          <!-- TODO: Check for a new section name -->
+          <h2>Summary</h2>
+
+          <p>{{ curry.summary }}</p>
+        </section>
+
+        <section id="experience">
+          <h2>Experience</h2>
+
+          <ul>
+            {% for experience in curry.experience %}
+            <li>
+              <h3>{{ experience.title }}</h3>
+              <div class="text-rose-600 text-sm font-medium">
+                <span>{{ experience.start_date }}</span> - <span>{% if experience.end_date %} {{ experience.end_date }} {% else %} Present {% endif %}</span>
+              </div>
+              <p>{{ experience.description }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+
+        <section id="education">
+          <h2>Education</h2>
+
+          <ul>
+            {% for education in curry.education %}
+            <li>
+              <h3>{{ education.title }}</h3>
+              <div class="text-rose-600 text-sm font-medium">
+                <span>{{ education.start_date }}</span> - <span>{% if education.end_date %} {{ education.end_date }} {% else %} Present {% endif %}</span>
+              </div>
+              <p>University of Applied Sciences, Amsterdam</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+      </div>
+
+      <div class="flex flex-col gap-9 mt-2.5 pl-6">
+        <section id="details">
+          <h2>Details</h2>
+
+          <ul>
+            <li><a href="mailto:{{ curry.contact_email }}">{{ curry.contact_email }}</a></li>
+            <li>{{ curry.phone_number }}</li>
+            {% for link in curry.links %}
+            <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </section>
+
+        <section id="languages">
+          <h2>Languages</h2>
+
+          <ul>
+            {% for language in curry.languages %}
+            <li>{{ language.language }}, {{ language.proficiency.value }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+
+        <section id="stack">
+          <h2>Stack</h2>
+
+          <ul class="!flex-row flex-wrap">
+            {% for item in curry.skills %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      print();
+    </script>
+  </body>
+</html>

@@ -8,9 +8,12 @@
 #     "pydantic",
 #     "pydantic-extra-types",
 #     "rich",
+#     "selenium",
 # ]
 # ///
 
+import base64
+import os
 from datetime import date
 from enum import Enum
 from pathlib import Path
@@ -20,6 +23,8 @@ from pydantic import BaseModel, EmailStr, HttpUrl
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
+from selenium import webdriver
+from selenium.webdriver.common.print_page_options import PrintOptions
 
 # ==============================
 # Models
@@ -41,7 +46,7 @@ class TimelineEvent(BaseModel):
     description: str
 
 
-class SocialLink(BaseModel):
+class Link(BaseModel):
     name: str
     url: HttpUrl
 
@@ -52,32 +57,41 @@ class Language(BaseModel):
 
 
 class Curry(BaseModel):
-    full_name: str | None = None
-    job_title: str | None = None
-    location: str | None = None
-    summary: str | None = None
+    title: str | None = None
 
-    experience: list[TimelineEvent] = []
-    education: list[TimelineEvent] = []
-    skills: list[str] = []
+    full_name: str
+    job_title: str
+    location: str
+    summary: str
 
-    languages: list[Language] = []
+    experience: list[TimelineEvent]
+    education: list[TimelineEvent]
+    skills: list[str]
+
+    languages: list[Language]
 
     phone_number: PhoneNumber | None = None
-    contact_email: EmailStr | None = None
-    website: HttpUrl | None = None
-    social_links: list[SocialLink] = []
+    contact_email: EmailStr
+    links: list[Link] = []
 
 
 # ==============================
-# Templating
+# Chrome setup
 # ==============================
-def render(curry: Curry):
-    print(curry.model_dump())
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--kiosk-printing")
+
+driver = webdriver.Chrome(options=chrome_options)
+
+print_options = PrintOptions()
+print_options.orientation = "portrait"
+
+print_options.page_height = 27.94  # A4's height
+print_options.page_width = 21.59  # A4's width'
 
 
 # ==============================
-# CLI
+# Command
 # ==============================
 
 
@@ -86,6 +100,11 @@ def render(curry: Curry):
     "--template",
     type=click.Path(exists=True, dir_okay=False, readable=True),
     help="Path to the template file",
+)
+@click.option(
+    "--title",
+    type=str,
+    help="Title of the document",
 )
 @click.option(
     "--full-name",
@@ -142,18 +161,14 @@ def render(curry: Curry):
     help="Contact email",
 )
 @click.option(
-    "--website",
-    type=str,
-    help="Personal website",
-)
-@click.option(
     "--link",
     type=(str, str),
     multiple=True,
-    help="Social links",
+    help="Links",
 )
 def cli(
     template,
+    title,
     full_name,
     job_title,
     location,
@@ -164,10 +179,10 @@ def cli(
     language,
     phone_number,
     contact_email,
-    website,
     link,
 ):
     curry = Curry(
+        title=title,
         full_name=full_name,
         job_title=job_title,
         location=location,
@@ -191,8 +206,7 @@ def cli(
         ],
         phone_number=phone_number,
         contact_email=contact_email,
-        website=website,
-        social_links=[SocialLink(name=url, url=name) for (url, name) in link],
+        links=[Link(name=url, url=name) for (url, name) in link],
     )
 
     try:
@@ -203,9 +217,20 @@ def cli(
         template = env.get_template(template_name)
         rendered_output = template.render(curry=curry.model_dump())
 
-        output_file = Path("./cv.html")
-        with output_file.open("w", encoding="utf-8") as f:
+        temp_file = Path("./temp.html")
+        with temp_file.open("w", encoding="utf-8") as f:
             f.write(rendered_output)
+
+        driver.get(f"{temp_file.absolute().as_uri()}")
+
+        pdf = driver.print_page(print_options)
+        pdf_data = base64.b64decode(pdf)
+        with open(f"{curry.title}.pdf", "wb") as f:
+            f.write(pdf_data)
+
+        os.remove(temp_file)
+
+        driver.quit()
     except Exception as e:
         print(f"[bold red]ERROR[/]: something went wrong: {e}")
 
