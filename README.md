@@ -20,6 +20,7 @@ The script works in 3 main steps:
 2. Then the specified HTML template is retrieved and `Jinja2` is used to render a temporary HTML file with the result.
 3. Finally, `selenium` is used to launch a Chrome instance that opens the temporary file and prints out a PDF.
 
+> [!NOTE]
 > The temporary HTML file is removed at the end, and the resulting PDF file is saved using the title specified via the corresponding command-line argument.
 
 ## Usage
@@ -67,3 +68,6 @@ To learn more about each argument does you can also run:
 ```bash
 uv run curryvitae.py --help
 ```
+
+> [!TIP]
+> The `curry.html` file provides an example template that uses Tailwind CSS for styling, but you can use any styling framework or custom styles you prefer. The key point to remember is that the appearance of the page in the browser is not what matters; what’s important is how it looks in the print dialog and the final PDF file.
