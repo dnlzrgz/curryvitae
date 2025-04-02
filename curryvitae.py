@@ -7,7 +7,6 @@
 #     "phonenumbers",
 #     "pydantic",
 #     "pydantic-extra-types",
-#     "rich",
 #     "selenium",
 # ]
 # ///
@@ -18,7 +17,6 @@ from datetime import date
 from enum import Enum
 from pathlib import Path
 import click
-from rich import print
 from pydantic import BaseModel, EmailStr, HttpUrl
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from jinja2 import Environment
@@ -57,7 +55,7 @@ class Language(BaseModel):
 
 
 class Curry(BaseModel):
-    title: str | None = None
+    title: str
 
     full_name: str
     job_title: str
@@ -232,7 +230,7 @@ def cli(
 
         driver.quit()
     except Exception as e:
-        print(f"[bold red]ERROR[/]: something went wrong: {e}")
+        click.echo(f"ERROR: something went wrong: {e}")
 
 
 if __name__ == "__main__":
