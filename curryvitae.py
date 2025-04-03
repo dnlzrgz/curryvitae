@@ -74,21 +74,6 @@ class Curry(BaseModel):
 
 
 # ==============================
-# Chrome setup
-# ==============================
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--kiosk-printing")
-
-driver = webdriver.Chrome(options=chrome_options)
-
-print_options = PrintOptions()
-print_options.orientation = "portrait"
-
-print_options.page_height = 27.94  # A4's height
-print_options.page_width = 21.59  # A4's width'
-
-
-# ==============================
 # Command
 # ==============================
 
@@ -97,72 +82,81 @@ print_options.page_width = 21.59  # A4's width'
 @click.option(
     "--template",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="Path to the template file",
+    help="Path to the template file to be used for generating the CV.",
 )
 @click.option(
     "--title",
     type=str,
-    help="Title of the document",
+    help="Title of the document (e.g., 'cv-john-doe').",
 )
 @click.option(
     "--full-name",
+    "--name",
     type=str,
-    help="Full name",
+    help="Your full name as you want it to appear on the CV.",
 )
 @click.option(
     "--job-title",
+    "--position",
     type=str,
-    help="Job title or position",
+    help="Your current job title or position.",
 )
 @click.option(
     "--location",
     type=str,
-    help="Current location",
+    help="Your current location (e.g., 'city, country').",
 )
 @click.option(
     "--summary",
+    "--description",
     type=str,
-    help="Summary or description",
+    help="Summary or description of your professional background.",
 )
 @click.option(
     "--experience",
+    "--exp",
     type=(str, str, str, str),
     multiple=True,
-    help="Experience",
+    help="Work experience in the format: Company, start date, end date, description.",
 )
 @click.option(
     "--education",
+    "--edu",
     type=(str, str, str, str),
     multiple=True,
-    help="Education",
+    help="Education in the format: Grade and institution, start date, end date, description.",
 )
 @click.option(
     "--skill",
     type=str,
     multiple=True,
-    help="Skill",
+    help="List of relevant skills.",
 )
 @click.option(
     "--language",
+    "--lang",
     type=(str, str),
     multiple=True,
-    help="Languages",
+    help="Languages you speak along with your preficiency level (e.g., 'Spanish' 'Native').",
 )
 @click.option(
     "--phone-number",
+    "--phone",
     type=str,
-    help="Phone number",
+    help="Your phone number.",
 )
 @click.option(
     "--contact-email",
+    "--email",
     type=str,
-    help="Contact email",
+    help="Your contact email.",
 )
 @click.option(
     "--link",
+    "--url",
     type=(str, str),
     multiple=True,
-    help="Links",
+    help="Links to your online profiles or social networks in the format: 'URL', 'link name'.",
 )
 def cli(
     template,
@@ -187,13 +181,19 @@ def cli(
         summary=summary,
         experience=[
             TimelineEvent(
-                title=exp[0], start_date=exp[1], end_date=exp[2], description=exp[3]
+                title=exp[0],
+                start_date=exp[1],
+                end_date=None if exp[2] == "" else exp[2],
+                description=exp[3],
             )
             for exp in experience
         ],
         education=[
             TimelineEvent(
-                title=edu[0], start_date=edu[1], end_date=edu[2], description=edu[3]
+                title=edu[0],
+                start_date=edu[1],
+                end_date=None if edu[2] == "" else edu[2],
+                description=edu[3],
             )
             for edu in education
         ],
@@ -218,6 +218,16 @@ def cli(
         temp_file = Path("./temp.html")
         with temp_file.open("w", encoding="utf-8") as f:
             f.write(rendered_output)
+
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--kiosk-printing")
+
+        driver = webdriver.Chrome(options=chrome_options)
+
+        print_options = PrintOptions()
+        print_options.orientation = "portrait"
+        print_options.page_height = 27.94  # A4's height
+        print_options.page_width = 21.59  # A4's width'
 
         driver.get(f"{temp_file.absolute().as_uri()}")
 

@@ -26,7 +26,7 @@
       }
     </style>
   </head>
-  <body class="min-w-screen min-h-screen bg-stone-50 text-stone-600 text-base">
+  <body class="min-w-screen min-h-screen bg-stone-50 text-stone-600 text-sm">
     <main class="mx-auto grid grid-cols-[4fr_2fr] [&_h1]:text-stone-900 [&_h2]:text-rose-600 [&_h3]:text-stone-900 [&_h1,&_h2]:text-2xl [&_h3]:text-lg [&_h2]:mb-3 [&_h1,&_h2,&_h3]:text-balance [&_p]:text-pretty [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5">
       <div class="flex flex-col gap-9 pr-6 pb-6 border-r border-r-stone-100">
         <section id="introduction" class="flex gap-6 items-center">
@@ -74,7 +74,7 @@
               <div class="text-rose-600 text-sm font-medium">
                 <span>{{ education.start_date }}</span> - <span>{% if education.end_date %} {{ education.end_date }} {% else %} Present {% endif %}</span>
               </div>
-              <p>University of Applied Sciences, Amsterdam</p>
+              <p>{{ education.description }}</p>
             </li>
             {% endfor %}
           </ul>
@@ -87,7 +87,9 @@
 
           <ul>
             <li><a href="mailto:{{ curry.contact_email }}">{{ curry.contact_email }}</a></li>
-            <li>{{ curry.phone_number }}</li>
+            {% if curry.phone_number %}
+              <li>{{ curry.phone_number | replace('tel:', '') | replace('-', '') }}</li>
+            {% endif %}
             {% for link in curry.links %}
             <li><a href="{{ link.url }}">{{ link.name }}</a></li>
             {% endfor %}
@@ -104,12 +106,12 @@
           </ul>
         </section>
 
-        <section id="stack">
-          <h2>Stack</h2>
+        <section id="skills">
+          <h2>Skills</h2>
 
-          <ul class="!flex-row flex-wrap">
-            {% for item in curry.skills %}
-            <li>{{ item }}</li>
+          <ul>
+            {% for skill in curry.skills %}
+            <li>{{ skill }}</li>
             {% endfor %}
           </ul>
         </section>
