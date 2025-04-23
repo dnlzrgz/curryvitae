@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      {% if curry.title %}
+        {{ curry.title }}
+      {% else %}
+        {{ curry.full_name | lower | replace(" ", "-") }}
+      {% endif %}
+    </title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+      @theme {
+        --font-display: "Geist", "sans-serif";
+        --font-sans: "Geist", "sans-serif";
+      }
+    </style>
+
+    <!-- The icons used are from https://geist-ui.dev/en-us/components/icons -->
+  </head>
+  <body class="min-w-screen min-h-screen bg-stone-50 text-stone-900 text-sm text-pretty [&_section]:py-6 [&_h1,&_h2,&_h3]:text-balance [&_h2]:mb-1.5 [&_h2]:font-3xl [&_h2]:font-medium [&_h2]:tracking-wider [&_h2,&_h3]:uppercase [&_h3]:font-4xl [&_h3]:font-bold">
+    <main class="grid grid-cols-[1.5fr_3.5fr]">
+      <div id="col1" class="pr-6 border-r border-r-stone-200">
+        <section id="avatar">
+          <img src="./avatar.jpg" class="aspect-square w-56 object-cover"/>
+        </section>
+
+        <section id="education" class="border-b border-b-stone-200">
+          <h2>Education</h2>
+          <ul>
+            {% for education in curry.education %}
+            <li>
+              <time datetime="{{ education.start_date }}">{{ education.start_date }}</time> - <time>{% if education.end_date %} {{ education.end_date }} {% else %} Present {% endif %}</time>
+              <h3>{{ education.title }}</h3>
+              <p>{{ education.place }}</p>
+              <p>{{ education.description }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+
+        <section id="languages" class="border-b border-b-stone-200">
+          <h2>Languages</h2>
+          <ul class="flex flex-col gap-1.5 [&_li]:inline-flex [&_li]:gap-0.5 [&_li]:items-center">
+            {% for language in curry.languages %}
+            <li>
+              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" shape-rendering="geometricPrecision" viewBox="0 0 24 24" class="w-4 h-4" style="color: currentcolor;"><path d="M9 18l6-6-6-6"></path></svg>
+              {{ language }}
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+
+        <section id="skills">
+          <h2>Skills</h2>
+          <ul class="flex flex-wrap">
+            {% for skill in curry.skills %}
+            {% if loop.last %} and {% endif %}{{ skill }}{% if loop.last %}. {% else %}, {% endif %}
+            {% endfor %}
+          </ul>
+        </section>
+      </div>
+        
+      <div id="col2" class="pl-6">
+        <div class="py-3 flex flex-col align-items justify-items-center border-b border-b-stone-200">
+          <section id="name">
+            <h1 class="text-5xl mb-3">{{ curry.full_name }}</h1>
+            <h2>{{ curry.job_title }}</h2>
+            <p>{{ curry.location }}</p>
+          </section>
+
+          <section id="contact">
+          <ul class="flex gap-1 [&_a]:inline-flex [&_a]:items-center [&_a]:gap-1">
+            {% set phone_number = curry.phone_number | replace('tel:', '') | replace('-', '') %}
+            <a href="tel:{{ phone_number }}" role="listitem">
+              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" shape-rendering="geometricPrecision" viewBox="0 0 24 24" class="w-5 h-5" style="color: currentcolor;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path></svg>
+              {{ phone_number }}
+            </a>
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" shape-rendering="geometricPrecision" viewBox="0 0 24 24" class="w-5 h-5" style="color: currentcolor;"><path d="M16.88 3.549L7.12 20.451"></path></svg>
+              <a href="mailto:{{ curry.contact_email }}" role="listitem">
+              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" shape-rendering="geometricPrecision" viewBox="0 0 24 24" class="w-5 h-5" style="color: currentcolor;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><path d="M22 6l-10 7L2 6"></path></svg>
+                {{ curry.contact_email }}
+            </a>
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" shape-rendering="geometricPrecision" viewBox="0 0 24 24" class="w-5 h-5" style="color: currentcolor;"><path d="M16.88 3.549L7.12 20.451"></path></svg>
+              <a href="{{ curry.links[0].url }}" role="listitem">
+              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" shape-rendering="geometricPrecision" viewBox="0 0 24 24" class="w-5 h-5" style="color: currentcolor;"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
+                {{ curry.links[0].name }}
+            </a>
+          </ul>
+          </section>
+        </div>
+
+        <section id="profile" class="border-b border-b-stone-200">
+          <h2>Profile</h2>
+          <p>{{ curry.summary }}</p>
+        </section>
+        
+        <section id="experience">
+          <h2>Work Experience</h2>
+          <ul class="flex flex-col gap-3">
+            {% for experience in curry.experience %}
+            <li>
+              <span>
+                <time datetime="{{ experience.start_date }}">{{ experience.start_date }}</time> - <time>{% if experience.end_date %} {{ experience.end_date }} {% else %} Present {% endif %}</time>
+              </span>
+              <h3>{{ experience.title }}</h3>
+              <p>{{ experience.place }}</p>
+              <p>{{ experience.description }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

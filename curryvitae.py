@@ -13,8 +13,6 @@
 
 import base64
 import os
-from datetime import date
-from enum import Enum
 from pathlib import Path
 import click
 from pydantic import BaseModel, EmailStr, HttpUrl
@@ -29,29 +27,17 @@ from selenium.webdriver.common.print_page_options import PrintOptions
 # ==============================
 
 
-class ProficiencyLevel(str, Enum):
-    ELEMENTARY = "Elementary"
-    INTERMEDIATE = "Intermediate"
-    ADVANCED = "Advanced"
-    FLUENT = "Fluent"
-    NATIVE = "Native"
-
-
 class TimelineEvent(BaseModel):
     title: str
-    start_date: date
-    end_date: date | None = None
+    start_date: str
+    end_date: str | None = None
+    place: str | None = None
     description: str
 
 
 class Link(BaseModel):
     name: str
     url: HttpUrl
-
-
-class Language(BaseModel):
-    language: str
-    proficiency: ProficiencyLevel
 
 
 class Curry(BaseModel):
@@ -66,7 +52,7 @@ class Curry(BaseModel):
     education: list[TimelineEvent]
     skills: list[str]
 
-    languages: list[Language]
+    languages: list[str]
 
     phone_number: PhoneNumber | None = None
     contact_email: EmailStr
@@ -115,16 +101,16 @@ class Curry(BaseModel):
 @click.option(
     "--experience",
     "--exp",
-    type=(str, str, str, str),
+    type=(str, str, str, str, str),
     multiple=True,
-    help="Work experience in the format: Company, start date, end date, description.",
+    help="Work experience in the format: Job title, start date, end date (optional), company (optional), and description.",
 )
 @click.option(
     "--education",
     "--edu",
-    type=(str, str, str, str),
+    type=(str, str, str, str, str),
     multiple=True,
-    help="Education in the format: Grade and institution, start date, end date, description.",
+    help="Education in the format: Grade, start date, end date (optional), place or university (optional), and description.",
 )
 @click.option(
     "--skill",
@@ -135,9 +121,9 @@ class Curry(BaseModel):
 @click.option(
     "--language",
     "--lang",
-    type=(str, str),
+    type=str,
     multiple=True,
-    help="Languages you speak along with your preficiency level (e.g., 'Spanish' 'Native').",
+    help="Languages you speak.",
 )
 @click.option(
     "--phone-number",
@@ -184,7 +170,8 @@ def cli(
                 title=exp[0],
                 start_date=exp[1],
                 end_date=None if exp[2] == "" else exp[2],
-                description=exp[3],
+                place=None if exp[3] == "" else exp[3],
+                description=exp[4],
             )
             for exp in experience
         ],
@@ -193,15 +180,13 @@ def cli(
                 title=edu[0],
                 start_date=edu[1],
                 end_date=None if edu[2] == "" else edu[2],
-                description=edu[3],
+                place=None if edu[3] == "" else edu[3],
+                description=edu[4],
             )
             for edu in education
         ],
         skills=list(skill),
-        languages=[
-            Language(language=lang[0], proficiency=ProficiencyLevel(lang[1]))
-            for lang in language
-        ],
+        languages=[lang for lang in language],
         phone_number=phone_number,
         contact_email=contact_email,
         links=[Link(name=url, url=name) for (url, name) in link],
@@ -220,14 +205,12 @@ def cli(
             f.write(rendered_output)
 
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--kiosk-printing")
-
         driver = webdriver.Chrome(options=chrome_options)
 
         print_options = PrintOptions()
         print_options.orientation = "portrait"
         print_options.page_height = 27.94  # A4's height
-        print_options.page_width = 21.59  # A4's width'
+        print_options.page_width = 21.59  # A4's width
 
         driver.get(f"{temp_file.absolute().as_uri()}")
 

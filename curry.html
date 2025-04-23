@@ -14,15 +14,15 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <style type="text/tailwindcss">
       @theme {
-        --font-display: "Poppins", "sans-serif";
-        --font-sans: "Poppins", "sans-serif";
+        --font-display: "Geist", "sans-serif";
+        --font-sans: "Geist", "sans-serif";
       }
     </style>
   </head>
@@ -41,9 +41,8 @@
           </div>
         </section>
 
-        <section id="summary">
-          <!-- TODO: Check for a new section name -->
-          <h2>Summary</h2>
+        <section id="profile">
+          <h2>Profile</h2>
 
           <p>{{ curry.summary }}</p>
         </section>
@@ -86,7 +85,8 @@
           <h2>Details</h2>
 
           <ul>
-            <li><a href="mailto:{{ curry.contact_email }}">{{ curry.contact_email }}</a></li>
+            <li>
+              <a href="mailto:{{ curry.contact_email }}">{{ curry.contact_email }}</a></li>
             {% if curry.phone_number %}
               <li>{{ curry.phone_number | replace('tel:', '') | replace('-', '') }}</li>
             {% endif %}
@@ -101,7 +101,7 @@
 
           <ul>
             {% for language in curry.languages %}
-            <li>{{ language.language }}, {{ language.proficiency.value }}</li>
+            <li>{{ language }}</li>
             {% endfor %}
           </ul>
         </section>
