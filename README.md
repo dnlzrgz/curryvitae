@@ -13,7 +13,7 @@ The script is less than 250 lines of code, and I aimed to make it easy to modify
 
 ## Why?
 
-I am searching for a job, and as every good job search requires a strong CV, I started looking for a tool that would allow me to build my curriculum without having to give away all my personal information. I also wanted a tool that would let me modify the template as much as I wanted and generate slightly different versions of my curriculum to better suit specific job offers. Unfortunately, I couldn't find anything that met my needs, so I decided to build my own tool.
+I am searching for a job, and as every good job search requires a good CV, I started looking for a tool that would allow me to build my curriculum without having to give away all my personal information. I also wanted a tool that would let me modify the template as much as I wanted and generate slightly different versions of my curriculum to better suit specific job offers. Unfortunately, I couldn't find anything that met my needs, so I decided to build my own tool.
 
 > [!NOTE]
 > If you are looking for someone to hire, feel free to check out my [portfolio](https://dnlzrgz.com) and feel free to contact me.
@@ -22,12 +22,28 @@ I am searching for a job, and as every good job search requires a strong CV, I s
 
 Before start using it, you should:
 
-1. Make sure that you have `uv` installed in your system (the preferred way to run the script.)
+1. Make sure that you have `uv` and `git` installed in your system.
 2. Review the script before running it.
 3. Add an `avatar.jpg` file to the folder in which you're going to run the script.
 4. Make sure that there is at least one template file.
 
-Once you have checked all the steps above, you can run a command like:
+Once you have checked all the steps above just clone this repository:
+
+```bash
+# With gh
+gh repo clone dnlzrgz/curryvitae
+
+# Or a classic git clone
+git clone https://github.com/dnlzrgz/curryvitae.git
+```
+
+Change into the `marastatic` directory:
+
+```bash
+cd marastatic
+```
+
+And finally, you can run a command like:
 
 ```bash
 uv run curryvitae.py \
